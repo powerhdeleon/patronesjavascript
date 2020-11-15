@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+        .container{
+            width: 90%;
+            height: 140px;
+            padding:5px;
+            margin: 10px auto;
+            background-color:#eeeeee;
+            display:-webkit-flex; 
+            display: -ms-flexbox; 
+            /*display: flex;*/
+        }
+        .container .nowrap{
+            -webkit-flex-wrap: nowrap;
+            -ms-flex-wrap: nowrap;
+            flex-wrap: nowrap;
+        }
+        .box{
+            background-color:#ccc;
+            margin: 10px;
+            width:100%;
+            border: 1px solid;
+            padding: 5px;
+        }
+
+    </style>
+</head>
+<body>
+    <div>
+        <label>Texto: </label>
+        <textarea style="width: 100%; height: 100px;" id="mitexto"></textarea>
+    </div>
+    <div class="container nowrap" >
+        <div id="div1" class="box"></div>
+        <div id="div2" class="box"></div>
+        <div id="div3" class="box"></div>
+    </div>
+</body>
+
+<script>
+class Subject {
+    constructor(){
+        this.observers = [];
+    }
+
+    subscribe(o){
+        this.observers.push(o);
+    }
+
+    unsubscribe(o){
+        this.observers = this.observers.filter(e=> e!=0);
+    }
+
+    notify(model){
+        this.observers.forEach(observer =>{
+            observer.notify(model);
+        })
+    }
+}
+
+class TextSubject extends Subject{
+    constructor(){
+        super();
+        this.text = "";
+    }
+
+    notify(text){
+        this.text = text;
+
+        super.notify(this);
+    }
+}
+
+class Div1Observer{
+    notify(subject){
+        document.getElementById("div1").innerHTML = subject.text;
+    }
+}
+class Div2Observer{
+    notify(subject){
+        document.getElementById("div2").innerHTML = subject.text.length;
+    }
+}
+
+class Div3Observer{
+    notify(subject){
+        if(subject.text.search("cerveza") > 0){
+            document.getElementById("div3").innerHTML = "Salud!";
+        }else{
+            document.getElementById("div3").innerHTML = ":(";
+        
+        }
+    }
+}
+
+var textSubject = new TextSubject();
+let miDiv1 = new Div1Observer();
+let miDiv2 = new Div2Observer();
+let miDiv3 = new Div3Observer();
+textSubject.subscribe(miDiv1);
+textSubject.subscribe(miDiv2);
+textSubject.subscribe(miDiv3);
+
+document.getElementById("mitexto")
+.addEventListener("input", (event)=>{
+    textSubject.notify(event.target.value);
+});
+</script>
+</html>
